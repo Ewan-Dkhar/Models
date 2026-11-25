@@ -1,0 +1,719 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Machine Learning Models: Visual Architectures & Intuition</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Caveat:wght@600;700&family=Inter:wght@400;600;700&display=swap" rel="stylesheet" />
+  <style>
+    :root {
+      --bg: #FDFBF7;
+      --card: #FFFDF9;
+      --charcoal: #1E1B18;
+      --muted: #5F5850;
+      --yellow: #F59E0B;
+      --yellow-soft: #FEF3C7;
+      --orange: #EA580C;
+      --orange-soft: #FFEDD5;
+      --green: #10B981;
+      --green-soft: #D1FAE5;
+      --blue: #0284C7;
+      --blue-soft: #E0F2FE;
+      --purple: #8B5CF6;
+      --purple-soft: #EDE9FE;
+    }
+    * { box-sizing: border-box; margin: 0; padding: 0; }
+    body {
+      font-family: 'Inter', system-ui, sans-serif;
+      background: #EAE4D7;
+      color: var(--charcoal);
+      height: 100vh;
+      overflow: hidden;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+    }
+    .deck-viewport {
+      width: min(96vw, calc(88vh * 16 / 9));
+      aspect-ratio: 16 / 9;
+      background: var(--bg);
+      background-image:
+        linear-gradient(to right, rgba(30,27,24,0.04) 1px, transparent 1px),
+        linear-gradient(to bottom, rgba(30,27,24,0.04) 1px, transparent 1px);
+      background-size: 26px 26px;
+      border: 3px solid var(--charcoal);
+      border-radius: 255px 15px 225px 15px / 15px 225px 15px 255px;
+      box-shadow: 8px 10px 0 rgba(30,27,24,0.14);
+      position: relative;
+      overflow: hidden;
+      padding: 2.2% 3%;
+      display: flex;
+      flex-direction: column;
+    }
+    .deck-viewport:fullscreen, .deck-viewport:-webkit-full-screen {
+      width: 100vw;
+      height: 100vh;
+      max-width: none;
+      aspect-ratio: auto;
+      border: none;
+      border-radius: 0;
+      box-shadow: none;
+      padding: 2.5vh 3.5vw;
+    }
+    .slide { display: none; flex-direction: column; height: 100%; }
+    .slide.active { display: flex; }
+    .header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 1%; }
+    .badge {
+      display: inline-block;
+      padding: 4px 14px;
+      border-radius: 999px;
+      border: 2px solid var(--charcoal);
+      font-size: 0.74rem;
+      font-weight: 700;
+      color: #fff;
+      letter-spacing: 0.04em;
+      text-transform: uppercase;
+    }
+    .slide-num { font-weight: 700; color: var(--muted); font-size: 0.88rem; }
+    h1 {
+      font-family: 'Caveat', cursive;
+      font-size: clamp(1.7rem, 2.9vw, 2.55rem);
+      font-weight: 700;
+      line-height: 1.05;
+      color: var(--charcoal);
+      margin-top: 4px;
+    }
+    .subtitle { color: var(--muted); font-size: clamp(0.82rem, 1.15vw, 0.98rem); margin-top: 3px; margin-bottom: 12px; }
+    .grid-2 { display: grid; grid-template-columns: 1.12fr 1fr; gap: 18px; flex: 1; min-height: 0; }
+    .grid-2-eq { display: grid; grid-template-columns: 1fr 1fr; gap: 18px; flex: 1; min-height: 0; }
+    .grid-3 { display: grid; grid-template-columns: repeat(3, 1fr); gap: 16px; flex: 1; min-height: 0; }
+    .stack { display: flex; flex-direction: column; gap: 14px; min-height: 0; }
+    .card {
+      background: var(--card);
+      border: 2.5px solid var(--charcoal);
+      border-radius: 25px 8px 22px 10px / 10px 22px 8px 25px;
+      padding: 15px 18px;
+      position: relative;
+      display: flex;
+      flex-direction: column;
+      gap: 7px;
+      box-shadow: 3px 4px 0 rgba(30,27,24,0.08);
+    }
+    .card::before {
+      content: "";
+      position: absolute;
+      top: -9px;
+      left: 50%;
+      transform: translateX(-50%) rotate(-1.5deg);
+      width: 78px;
+      height: 16px;
+      background: rgba(229, 219, 197, 0.88);
+      border: 1px solid rgba(100,92,84,0.4);
+    }
+    .card h3 { font-family: 'Caveat', cursive; font-size: clamp(1.25rem, 1.8vw, 1.58rem); font-weight: 700; }
+    .card p, .card li { font-size: clamp(0.8rem, 1.02vw, 0.94rem); line-height: 1.42; }
+    .card ul { padding-left: 18px; display: flex; flex-direction: column; gap: 6px; }
+    .left-col { display: flex; flex-direction: column; gap: 8px; min-height: 0; }
+    .diagram-box { flex: 1; min-height: 0; display: flex; align-items: center; justify-content: center; }
+    .diagram-box img {
+      width: 100%;
+      max-height: 100%;
+      object-fit: contain;
+      border-radius: 12px;
+      border: 2px solid var(--charcoal);
+      background: #fff;
+    }
+    .ref-strip { font-size: 0.82rem; font-weight: 600; color: var(--charcoal); }
+    .ref-strip a, .links a { color: var(--blue); text-decoration: underline; margin-right: 10px; }
+    .links { margin-top: auto; padding-top: 6px; font-size: 0.82rem; font-weight: 600; }
+    .cheat-row {
+      display: flex;
+      flex-direction: column;
+      justify-content: center;
+      padding: 10px 16px;
+      border: 2px solid var(--charcoal);
+      border-radius: 18px 8px 16px 10px / 8px 16px 8px 18px;
+      font-size: clamp(0.78rem, 1vw, 0.92rem);
+    }
+    .controls { margin-top: 10px; display: flex; gap: 10px; align-items: center; }
+    .controls button {
+      background: var(--card);
+      border: 2px solid var(--charcoal);
+      border-radius: 999px;
+      padding: 6px 14px;
+      font-weight: 600;
+      cursor: pointer;
+      font-size: 0.85rem;
+    }
+    .controls button:hover { background: var(--yellow-soft); }
+    .notes-drawer {
+      position: fixed;
+      bottom: 54px;
+      right: 24px;
+      width: 360px;
+      background: var(--yellow-soft);
+      border: 2px solid var(--charcoal);
+      border-radius: 12px;
+      padding: 12px 14px;
+      font-size: 0.85rem;
+      display: none;
+      box-shadow: 4px 5px 0 rgba(0,0,0,0.15);
+      z-index: 20;
+    }
+    .notes-drawer.open { display: block; }
+    @media print {
+      body { background: #fff; height: auto; overflow: visible; }
+      .controls, .notes-drawer { display: none !important; }
+      .deck-viewport { width: 100%; box-shadow: none; border: none; }
+      .slide { display: flex !important; page-break-after: always; min-height: 92vh; }
+    }
+  </style>
+</head>
+<body>
+  <div class="deck-viewport" id="deck">
+    
+    <section class="slide active" data-notes="Course overview: 22-slide crayon-doodle visual guide to ML models and architectures.">
+      <div class="header"><span></span><span class="slide-num">1 / 22</span></div>
+      <div class="card" style="background:var(--blue-soft); margin-bottom:18px;">
+        <h1 style="margin-top:0">Machine Learning Models: Visual Architectures &amp; Intuition</h1>
+        <p><strong>Course Overview:</strong> A visual, sketch-driven walkthrough of core Supervised and Unsupervised Machine Learning algorithms.</p>
+        <p><strong>What We Cover:</strong> Model architectures, geometric &amp; probabilistic intuition, bias-variance trade-offs, and practical guidelines.</p>
+      </div>
+      <div class="grid-3">
+        <div class="card" style="background:var(--orange-soft)"><h3>1. Regression &amp; Regularization</h3><p>Linear Regression (OLS), Polynomial Features, Ridge (L2), and Lasso (L1).</p></div>
+        <div class="card" style="background:var(--green-soft)"><h3>2. Classification &amp; Ensembles</h3><p>Logistic Regression, k-NN, Naive Bayes, SVMs (Linear &amp; Kernel), CART, Random Forests &amp; GBDTs.</p></div>
+        <div class="card" style="background:var(--purple-soft)"><h3>3. Unsupervised Learning</h3><p>K-Means, DBSCAN density clustering, and Principal Component Analysis (PCA).</p></div>
+      </div>
+    </section>
+    <section class="slide" data-notes="Taxonomy of Supervised vs Unsupervised learning.">
+      <div class="header"><span class="badge" style="background:var(--blue)">Foundations</span><span class="slide-num">2 / 22</span></div>
+      <h1>The Machine Learning Landscape</h1>
+      <p class="subtitle">Taxonomy of Supervised vs. Unsupervised learning paradigms.</p>
+      <div class="grid-2-eq">
+        <div class="card" style="background:var(--orange-soft)">
+          <h3>Supervised Learning (Labeled Data: X, y)</h3>
+          <ul>
+            <li><strong>Goal:</strong> Learn a mapping f(X) &rarr; y from known input-output pairs.</li>
+            <li><strong>Regression:</strong> Continuous targets (house price, demand). Models: Linear, Polynomial, Ridge, Lasso, Trees, GBDT.</li>
+            <li><strong>Classification:</strong> Discrete class labels (spam/ham, diagnosis). Models: Logistic, k-NN, Naive Bayes, SVM, Trees, Forests, GBDT.</li>
+          </ul>
+        </div>
+        <div class="card" style="background:var(--purple-soft)">
+          <h3>Unsupervised Learning (Unlabeled Data: X)</h3>
+          <ul>
+            <li><strong>Goal:</strong> Discover hidden structure, groupings, or compact representations without labels.</li>
+            <li><strong>Clustering:</strong> Group similar observations (K-Means centroids) or dense regions with outlier detection (DBSCAN).</li>
+            <li><strong>Dimensionality Reduction:</strong> Project high-dimensional features onto orthogonal axes of maximum variance (PCA).</li>
+          </ul>
+        </div>
+      </div>
+    </section>
+    <section class="slide" data-notes="The End-to-End ML Workflow">
+      <div class="header"><span class="badge" style="background:var(--blue)">FOUNDATIONS</span><span class="slide-num">3 / 22</span></div>
+      <h1>The End-to-End ML Workflow</h1>
+      <p class="subtitle">Splitting data, preventing leakage with Pipelines, and evaluating on unseen test sets.</p>
+      <div class="grid-2">
+        <div class="left-col">
+          <div class="diagram-box"><img src="assets/00_pipeline.png" alt="The End-to-End ML Workflow" /></div>
+          <div class="ref-strip">Further Visuals &amp; Docs: <a href="https://www.kaggle.com/learn/intermediate-machine-learning" target="_blank">Kaggle Intermediate ML</a></div>
+        </div>
+        <div class="stack">
+          <div class="card" style="flex:1;">
+            <h3>Core Pipeline Principles</h3>
+            <ul><li><strong>Train/Test Split:</strong> Hold out 20% of data before any preprocessing to get an honest generalization score.</li>
+<li><strong>Data Leakage Prevention:</strong> Fit scalers/imputers ONLY on training data; apply the learned transform to test data.</li></ul>
+          </div>
+          <div class="card" style="background:var(--yellow-soft); flex:1;">
+            <h3>Why Pipelines Matter</h3>
+            <ul><li><strong>Reproducibility:</strong> Bundles preprocessing + model into one atomic object.</li>
+<li><strong>Cross-Validation:</strong> Ensures scaling happens freshly inside each CV fold.</li></ul>
+          </div>
+        </div>
+      </div>
+    </section>
+    <section class="slide" data-notes="Bias-Variance Trade-off: Underfitting vs. Overfitting">
+      <div class="header"><span class="badge" style="background:var(--orange)">FOUNDATIONS</span><span class="slide-num">4 / 22</span></div>
+      <h1>Bias-Variance Trade-off: Underfitting vs. Overfitting</h1>
+      <p class="subtitle">Balancing model complexity so predictions generalize to new, unseen data.</p>
+      <div class="grid-2">
+        <div class="left-col">
+          <div class="diagram-box"><img src="assets/00_bias_variance.png" alt="Bias-Variance Trade-off: Underfitting vs. Overfitting" /></div>
+          <div class="ref-strip">Further Visuals &amp; Docs: <a href="https://www.statlearning.com/" target="_blank">ISLR / ISLP Textbook</a></div>
+        </div>
+        <div class="stack">
+          <div class="card" style="flex:1;">
+            <h3>Diagnosing Model Fit</h3>
+            <ul><li><strong>High Bias (Underfitting):</strong> Model is too rigid (e.g., straight line on curved data); both train and test errors are high.</li>
+<li><strong>High Variance (Overfitting):</strong> Model memorizes training noise; train error is near 0% but test error spikes.</li></ul>
+          </div>
+          <div class="card" style="background:var(--yellow-soft); flex:1;">
+            <h3>How to Find the Sweet Spot</h3>
+            <ul><li><strong>Validation Curves:</strong> Use k-fold cross-validation to track test error as complexity grows.</li>
+<li><strong>Remedies:</strong> Add regularization or more data to fix variance; add features/flexibility to fix bias.</li></ul>
+          </div>
+        </div>
+      </div>
+    </section>
+    <section class="slide" data-notes="Linear Regression (Ordinary Least Squares)">
+      <div class="header"><span class="badge" style="background:var(--blue)">SUPERVISED: REGRESSION</span><span class="slide-num">5 / 22</span></div>
+      <h1>Linear Regression (Ordinary Least Squares)</h1>
+      <p class="subtitle">Fitting a hyperplane by minimizing the sum of squared vertical residuals.</p>
+      <div class="grid-2">
+        <div class="left-col">
+          <div class="diagram-box"><img src="assets/01_linear_ols.png" alt="Linear Regression (Ordinary Least Squares)" /></div>
+          <div class="ref-strip">Further Visuals &amp; Docs: <a href="https://scikit-learn.org/stable/modules/linear_model.html" target="_blank">Scikit-Learn Linear Models</a></div>
+        </div>
+        <div class="stack">
+          <div class="card" style="flex:1;">
+            <h3>Architecture &amp; Math Intuition</h3>
+            <ul><li><strong>Equation:</strong> y_hat = w1*x1 + w2*x2 + ... + b.</li>
+<li><strong>Objective (MSE):</strong> Minimizes (1/n) * sum((y_i - y_hat_i)^2) via closed-form normal equation or SVD.</li></ul>
+          </div>
+          <div class="card" style="background:var(--yellow-soft); flex:1;">
+            <h3>When to Use &amp; Trade-offs</h3>
+            <ul><li><strong>Strengths:</strong> Fast, zero hyperparameters, directly interpretable feature weights (w_j).</li>
+<li><strong>Limitations:</strong> Sensitive to outliers (squared error) and struggles with collinearity or curves.</li></ul>
+          </div>
+        </div>
+      </div>
+    </section>
+    <section class="slide" data-notes="Polynomial Regression (Basis Expansion)">
+      <div class="header"><span class="badge" style="background:var(--orange)">SUPERVISED: REGRESSION</span><span class="slide-num">6 / 22</span></div>
+      <h1>Polynomial Regression (Basis Expansion)</h1>
+      <p class="subtitle">Capturing non-linear curves while still using a fast linear solver.</p>
+      <div class="grid-2">
+        <div class="left-col">
+          <div class="diagram-box"><img src="assets/01_poly.png" alt="Polynomial Regression (Basis Expansion)" /></div>
+          <div class="ref-strip">Further Visuals &amp; Docs: <a href="https://scikit-learn.org/stable/modules/linear_model.html" target="_blank">Scikit-Learn Linear Models</a></div>
+        </div>
+        <div class="stack">
+          <div class="card" style="flex:1;">
+            <h3>Architecture &amp; Intuition</h3>
+            <ul><li><strong>Feature Expansion:</strong> Transforms input x into [x, x^2, ..., x^d] and interaction terms x1*x2.</li>
+<li><strong>Linear in Weights:</strong> Still solved by OLS because the weights w remain linear!</li></ul>
+          </div>
+          <div class="card" style="background:var(--yellow-soft); flex:1;">
+            <h3>When to Use &amp; Trade-offs</h3>
+            <ul><li><strong>Degree d:</strong> d=2 or 3 captures smooth curves; high d explodes feature count and overfits.</li>
+<li><strong>Best Practice:</strong> Pair with Ridge/Lasso regularization and feature scaling.</li></ul>
+          </div>
+        </div>
+      </div>
+    </section>
+    <section class="slide" data-notes="Ridge (L2) vs. Lasso (L1) Regression">
+      <div class="header"><span class="badge" style="background:var(--orange)">SUPERVISED: REGULARIZATION</span><span class="slide-num">7 / 22</span></div>
+      <h1>Ridge (L2) vs. Lasso (L1) Regression</h1>
+      <p class="subtitle">Constraining weight magnitude to tame overfitting and perform feature selection.</p>
+      <div class="grid-2">
+        <div class="left-col">
+          <div class="diagram-box"><img src="assets/02_ridge_lasso.png" alt="Ridge (L2) vs. Lasso (L1) Regression" /></div>
+          <div class="ref-strip">Further Visuals &amp; Docs: <a href="https://www.youtube.com/watch?v=Xm2C_gTAl8c" target="_blank">StatQuest: Ridge vs. Lasso</a> <a href="https://scikit-learn.org/stable/modules/linear_model.html" target="_blank">Scikit-Learn Linear Models</a></div>
+        </div>
+        <div class="stack">
+          <div class="card" style="flex:1;">
+            <h3>Constraint Geometry &amp; Sparsity</h3>
+            <ul><li><strong>Ridge (L2):</strong> Adds alpha * sum(w_j^2). Circular constraint shrinks correlated weights smoothly toward zero.</li>
+<li><strong>Lasso (L1):</strong> Adds alpha * sum(|w_j|). Diamond corners hit axes, setting irrelevant weights to exact 0.</li></ul>
+          </div>
+          <div class="card" style="background:var(--yellow-soft); flex:1;">
+            <h3>Choosing Between L1 &amp; L2</h3>
+            <ul><li><strong>Use Ridge:</strong> When most features carry useful signal or are correlated.</li>
+<li><strong>Use Lasso:</strong> When you want automatic feature selection (sparse model). Always scale features first!</li></ul>
+          </div>
+        </div>
+      </div>
+    </section>
+    <section class="slide" data-notes="Logistic Regression">
+      <div class="header"><span class="badge" style="background:var(--purple)">SUPERVISED: CLASSIFICATION</span><span class="slide-num">8 / 22</span></div>
+      <h1>Logistic Regression</h1>
+      <p class="subtitle">Mapping a linear combination through the Sigmoid function for calibrated probabilities.</p>
+      <div class="grid-2">
+        <div class="left-col">
+          <div class="diagram-box"><img src="assets/03_logistic.png" alt="Logistic Regression" /></div>
+          <div class="ref-strip">Further Visuals &amp; Docs: <a href="https://scikit-learn.org/stable/auto_examples/classification/plot_classifier_comparison.html" target="_blank">Scikit-Learn Classifier Comparison</a></div>
+        </div>
+        <div class="stack">
+          <div class="card" style="flex:1;">
+            <h3>Architecture &amp; Objective</h3>
+            <ul><li><strong>Sigmoid Activation:</strong> sigma(z) = 1 / (1 + e^-z) squashes any real score z = w^T x + b into (0, 1).</li>
+<li><strong>Loss Function:</strong> Minimizes Binary Cross-Entropy (Log Loss) rather than MSE.</li></ul>
+          </div>
+          <div class="card" style="background:var(--yellow-soft); flex:1;">
+            <h3>When to Use &amp; Trade-offs</h3>
+            <ul><li><strong>Decision Boundary:</strong> Linear hyperplane where P(y=1|x) = 0.5 (threshold can be tuned for precision/recall).</li>
+<li><strong>Strengths:</strong> Fast, interpretable log-odds, and outputs well-calibrated probabilities.</li></ul>
+          </div>
+        </div>
+      </div>
+    </section>
+    <section class="slide" data-notes="k-Nearest Neighbors (k-NN)">
+      <div class="header"><span class="badge" style="background:var(--green)">SUPERVISED: CLASSIFICATION</span><span class="slide-num">9 / 22</span></div>
+      <h1>k-Nearest Neighbors (k-NN)</h1>
+      <p class="subtitle">Non-parametric, instance-based classification by local neighborhood voting.</p>
+      <div class="grid-2">
+        <div class="left-col">
+          <div class="diagram-box"><img src="assets/03_knn.png" alt="k-Nearest Neighbors (k-NN)" /></div>
+          <div class="ref-strip">Further Visuals &amp; Docs: <a href="https://scikit-learn.org/stable/auto_examples/classification/plot_classifier_comparison.html" target="_blank">Scikit-Learn Classifier Comparison</a></div>
+        </div>
+        <div class="stack">
+          <div class="card" style="flex:1;">
+            <h3>Architecture &amp; Intuition</h3>
+            <ul><li><strong>Lazy Learner:</strong> Zero training optimization — stores training points and measures distances at query time.</li>
+<li><strong>Choosing k:</strong> Small k (e.g. 1) overfits noise; larger k smooths the decision boundary.</li></ul>
+          </div>
+          <div class="card" style="background:var(--yellow-soft); flex:1;">
+            <h3>When to Use &amp; Trade-offs</h3>
+            <ul><li><strong>Scaling Crucial:</strong> Unscaled features with large ranges dominate Euclidean distance.</li>
+<li><strong>Curse of Dimensionality:</strong> Slows down and loses accuracy when feature count is very high.</li></ul>
+          </div>
+        </div>
+      </div>
+    </section>
+    <section class="slide" data-notes="Naive Bayes Classifier">
+      <div class="header"><span class="badge" style="background:var(--blue)">SUPERVISED: CLASSIFICATION</span><span class="slide-num">10 / 22</span></div>
+      <h1>Naive Bayes Classifier</h1>
+      <p class="subtitle">Fast probabilistic classification via Bayes&#x27; Theorem and conditional independence.</p>
+      <div class="grid-2">
+        <div class="left-col">
+          <div class="diagram-box"><img src="assets/04_naive_bayes.png" alt="Naive Bayes Classifier" /></div>
+          <div class="ref-strip">Further Visuals &amp; Docs: <a href="https://www.youtube.com/watch?v=HZGCoVF3YvM" target="_blank">3Blue1Brown: Bayes Theorem</a></div>
+        </div>
+        <div class="stack">
+          <div class="card" style="flex:1;">
+            <h3>Architecture &amp; Variants</h3>
+            <ul><li><strong>Bayes Rule:</strong> P(y | X) proportional to P(y) * product(P(x_i | y)).</li>
+<li><strong>&#x27;Naive&#x27; Assumption:</strong> Assumes features are independent given the class — works surprisingly well in practice!</li></ul>
+          </div>
+          <div class="card" style="background:var(--yellow-soft); flex:1;">
+            <h3>Common Variants &amp; Use Cases</h3>
+            <ul><li><strong>Variants:</strong> GaussianNB (continuous features), MultinomialNB (word counts / NLP), BernoulliNB (binary).</li>
+<li><strong>Strengths:</strong> Blazing fast training, handles high-dimensional text/spam filtering effortlessly.</li></ul>
+          </div>
+        </div>
+      </div>
+    </section>
+    <section class="slide" data-notes="Support Vector Machines (SVM): Linear Margin">
+      <div class="header"><span class="badge" style="background:var(--orange)">SUPERVISED: CLASSIFICATION</span><span class="slide-num">11 / 22</span></div>
+      <h1>Support Vector Machines (SVM): Linear Margin</h1>
+      <p class="subtitle">Finding the widest separating street (maximum margin) between classes.</p>
+      <div class="grid-2">
+        <div class="left-col">
+          <div class="diagram-box"><img src="assets/04_svm_linear.png" alt="Support Vector Machines (SVM): Linear Margin" /></div>
+          <div class="ref-strip">Further Visuals &amp; Docs: <a href="https://www.youtube.com/@statquest/playlists" target="_blank">StatQuest: SVMs Playlist</a></div>
+        </div>
+        <div class="stack">
+          <div class="card" style="flex:1;">
+            <h3>Support Vectors &amp; Margin</h3>
+            <ul><li><strong>Maximum Margin:</strong> Maximizes 2 / ||w|| so the boundary stays as far from both classes as possible.</li>
+<li><strong>Support Vectors:</strong> Only the closest edge points (red rings) define the hyperplane; distant points don&#x27;t affect it.</li></ul>
+          </div>
+          <div class="card" style="background:var(--yellow-soft); flex:1;">
+            <h3>Soft Margin Hyperparameter (C)</h3>
+            <ul><li><strong>Large C:</strong> Narrower street, penalizes misclassifications heavily (risks overfitting).</li>
+<li><strong>Small C:</strong> Wider street, allows some margin violations for better generalization.</li></ul>
+          </div>
+        </div>
+      </div>
+    </section>
+    <section class="slide" data-notes="SVM: The Kernel Trick (Non-Linear Boundaries)">
+      <div class="header"><span class="badge" style="background:var(--green)">SUPERVISED: CLASSIFICATION</span><span class="slide-num">12 / 22</span></div>
+      <h1>SVM: The Kernel Trick (Non-Linear Boundaries)</h1>
+      <p class="subtitle">Implicitly projecting inseparable 2D data into higher dimensions without computing coordinates.</p>
+      <div class="grid-2">
+        <div class="left-col">
+          <div class="diagram-box"><img src="assets/04_svm_kernel.png" alt="SVM: The Kernel Trick (Non-Linear Boundaries)" /></div>
+          <div class="ref-strip">Further Visuals &amp; Docs: <a href="https://www.youtube.com/@statquest/playlists" target="_blank">StatQuest: SVMs Playlist</a> <a href="https://scikit-learn.org/stable/auto_examples/classification/plot_classifier_comparison.html" target="_blank">Classifier Comparison</a></div>
+        </div>
+        <div class="stack">
+          <div class="card" style="flex:1;">
+            <h3>How Kernels Work</h3>
+            <ul><li><strong>The Problem:</strong> Concentric rings or spirals cannot be separated by a straight line in 2D.</li>
+<li><strong>Kernel Trick:</strong> K(x, x&#x27;) computes dot products in a higher-dimensional space (e.g., RBF Gaussian kernel).</li></ul>
+          </div>
+          <div class="card" style="background:var(--yellow-soft); flex:1;">
+            <h3>Key Hyperparameters &amp; Trade-offs</h3>
+            <ul><li><strong>Gamma (RBF):</strong> Controls how far a single point&#x27;s influence reaches (high gamma = tight islands).</li>
+<li><strong>Scalability:</strong> Great on small/medium datasets; slow O(n^2–n^3) on hundreds of thousands of rows.</li></ul>
+          </div>
+        </div>
+      </div>
+    </section>
+    <section class="slide" data-notes="Decision Trees (CART): How Splits Work">
+      <div class="header"><span class="badge" style="background:var(--green)">TREE-BASED MODELS</span><span class="slide-num">13 / 22</span></div>
+      <h1>Decision Trees (CART): How Splits Work</h1>
+      <p class="subtitle">Greedy recursive binary splitting that maximizes node purity at every branch.</p>
+      <div class="grid-2">
+        <div class="left-col">
+          <div class="diagram-box"><img src="assets/05_decision_tree.png" alt="Decision Trees (CART): How Splits Work" /></div>
+          <div class="ref-strip">Further Visuals &amp; Docs: <a href="http://www.r2d3.us/visual-intro-to-machine-learning-part-1/" target="_blank">R2D3: Visual Intro to ML</a> <a href="https://www.youtube.com/@statquest/playlists" target="_blank">StatQuest: CART Playlist</a></div>
+        </div>
+        <div class="stack">
+          <div class="card" style="flex:1;">
+            <h3>Architecture &amp; Split Criteria</h3>
+            <ul><li><strong>Node Anatomy:</strong> Root node -&gt; internal decision nodes (x_j &lt;= t) -&gt; leaf predictions.</li>
+<li><strong>Impurity Metrics:</strong> Gini Impurity (1 - sum(p_k^2)) or Entropy for classification; MSE for regression.</li></ul>
+          </div>
+          <div class="card" style="background:var(--yellow-soft); flex:1;">
+            <h3>Strengths &amp; Properties</h3>
+            <ul><li><strong>Scale Invariant:</strong> No feature scaling needed; handles mixed numerical and non-linear interactions.</li>
+<li><strong>White-Box Model:</strong> Easy to visualize and explain every decision path step-by-step.</li></ul>
+          </div>
+        </div>
+      </div>
+    </section>
+    <section class="slide" data-notes="Decision Trees: Pruning &amp; Controlling Overfitting">
+      <div class="header"><span class="badge" style="background:var(--orange)">TREE-BASED MODELS</span><span class="slide-num">14 / 22</span></div>
+      <h1>Decision Trees: Pruning &amp; Controlling Overfitting</h1>
+      <p class="subtitle">Why single unconstrained trees overfit and how structural constraints fix them.</p>
+      <div class="grid-2">
+        <div class="left-col">
+          <div class="diagram-box"><img src="assets/05_tree_pruning.png" alt="Decision Trees: Pruning &amp; Controlling Overfitting" /></div>
+          <div class="ref-strip">Further Visuals &amp; Docs: <a href="http://www.r2d3.us/visual-intro-to-machine-learning-part-1/" target="_blank">R2D3: Visual Intro to ML</a></div>
+        </div>
+        <div class="stack">
+          <div class="card" style="flex:1;">
+            <h3>Pre-Pruning &amp; Post-Pruning</h3>
+            <ul><li><strong>Unconstrained Risk:</strong> A full tree creates 1-sample leaves that memorize every outlier in training data.</li>
+<li><strong>Pre-Pruning:</strong> Limit max_depth, min_samples_split, or min_samples_leaf before growth stops.</li></ul>
+          </div>
+          <div class="card" style="background:var(--yellow-soft); flex:1;">
+            <h3>Why Ensembles Come Next</h3>
+            <ul><li><strong>Cost-Complexity Pruning:</strong> Trim weak branches post-training using ccp_alpha.</li>
+<li><strong>High Variance:</strong> Even pruned single trees are sensitive to small data changes — ensembles solve this!</li></ul>
+          </div>
+        </div>
+      </div>
+    </section>
+    <section class="slide" data-notes="Random Forests (Bagging + Feature Subsampling)">
+      <div class="header"><span class="badge" style="background:var(--green)">ENSEMBLE MODELS</span><span class="slide-num">15 / 22</span></div>
+      <h1>Random Forests (Bagging + Feature Subsampling)</h1>
+      <p class="subtitle">Averaging hundreds of decorrelated decision trees to slash variance.</p>
+      <div class="grid-2">
+        <div class="left-col">
+          <div class="diagram-box"><img src="assets/06_random_forest.png" alt="Random Forests (Bagging + Feature Subsampling)" /></div>
+          <div class="ref-strip">Further Visuals &amp; Docs: <a href="https://www.youtube.com/@statquest/playlists" target="_blank">StatQuest: Random Forests</a> <a href="https://www.kaggle.com/learn/intro-to-machine-learning" target="_blank">Kaggle Intro to ML</a></div>
+        </div>
+        <div class="stack">
+          <div class="card" style="flex:1;">
+            <h3>Why Random Forests Work</h3>
+            <ul><li><strong>Bootstrap Aggregation:</strong> Each tree trains on a random sample with replacement (~63% unique rows).</li>
+<li><strong>Feature Subsampling:</strong> Each split tests only sqrt(M) random features, preventing one strong feature from dominating.</li></ul>
+          </div>
+          <div class="card" style="background:var(--yellow-soft); flex:1;">
+            <h3>Practical Advantages</h3>
+            <ul><li><strong>Out-of-Bag (OOB):</strong> Unused ~37% rows act as a built-in validation check.</li>
+<li><strong>Strong Baseline:</strong> Hard to overfit by adding more trees; handles tabular data with minimal tuning.</li></ul>
+          </div>
+        </div>
+      </div>
+    </section>
+    <section class="slide" data-notes="Gradient Boosted Decision Trees (GBDT)">
+      <div class="header"><span class="badge" style="background:var(--purple)">ENSEMBLE MODELS</span><span class="slide-num">16 / 22</span></div>
+      <h1>Gradient Boosted Decision Trees (GBDT)</h1>
+      <p class="subtitle">Sequential additive training where each shallow tree fits the prior model&#x27;s residuals.</p>
+      <div class="grid-2">
+        <div class="left-col">
+          <div class="diagram-box"><img src="assets/07_gradient_boosting.png" alt="Gradient Boosted Decision Trees (GBDT)" /></div>
+          <div class="ref-strip">Further Visuals &amp; Docs: <a href="https://www.youtube.com/@statquest/playlists" target="_blank">StatQuest: Gradient Boost</a></div>
+        </div>
+        <div class="stack">
+          <div class="card" style="flex:1;">
+            <h3>Additive Residual Architecture</h3>
+            <ul><li><strong>Sequential Correction:</strong> F_m(x) = F_(m-1)(x) + lr * h_m(x). Unlike Random Forests, trees are NOT independent.</li>
+<li><strong>Weak Learners:</strong> Uses shallow trees (depth 3–6) that progressively reduce bias.</li></ul>
+          </div>
+          <div class="card" style="background:var(--yellow-soft); flex:1;">
+            <h3>Key Hyperparameters</h3>
+            <ul><li><strong>Learning Rate (lr):</strong> Small lr (0.01–0.1) shrinks each tree&#x27;s step for better generalization.</li>
+<li><strong>Early Stopping:</strong> Stop adding trees when validation error stops improving to prevent overfitting.</li></ul>
+          </div>
+        </div>
+      </div>
+    </section>
+    <section class="slide" data-notes="XGBoost, LightGBM &amp; CatBoost">
+      <div class="header"><span class="badge" style="background:var(--blue)">ENSEMBLE MODELS</span><span class="slide-num">17 / 22</span></div>
+      <h1>XGBoost, LightGBM &amp; CatBoost</h1>
+      <p class="subtitle">Production-grade GBDT libraries dominating tabular benchmarks and Kaggle competitions.</p>
+      <div class="grid-2">
+        <div class="left-col">
+          <div class="diagram-box"><img src="assets/07_gbdt_variants.png" alt="XGBoost, LightGBM &amp; CatBoost" /></div>
+          <div class="ref-strip">Further Visuals &amp; Docs: <a href="https://xgboost.readthedocs.io/en/stable/tutorials/model.html" target="_blank">XGBoost Docs</a> <a href="https://www.kaggle.com/competitions" target="_blank">Kaggle Competitions</a></div>
+        </div>
+        <div class="stack">
+          <div class="card" style="flex:1;">
+            <h3>Architectural Differences</h3>
+            <ul><li><strong>XGBoost:</strong> Level-wise tree growth, 2nd-order Taylor gradients (Hessian), built-in L1/L2 leaf regularization.</li>
+<li><strong>LightGBM:</strong> Histogram binning + leaf-wise growth (splits highest-gain leaf first -&gt; super fast on large data).</li></ul>
+          </div>
+          <div class="card" style="background:var(--yellow-soft); flex:1;">
+            <h3>Choosing a GBDT Library</h3>
+            <ul><li><strong>CatBoost:</strong> Oblivious/symmetric trees + ordered target encoding for native categorical columns.</li>
+<li><strong>Rule of Thumb:</strong> LightGBM for speed/scale, CatBoost for heavy categoricals, XGBoost as the classic all-rounder.</li></ul>
+          </div>
+        </div>
+      </div>
+    </section>
+    <section class="slide" data-notes="K-Means Clustering">
+      <div class="header"><span class="badge" style="background:var(--blue)">UNSUPERVISED: CLUSTERING</span><span class="slide-num">18 / 22</span></div>
+      <h1>K-Means Clustering</h1>
+      <p class="subtitle">Iterative centroid-based partitioning minimizing within-cluster sum of squares (inertia).</p>
+      <div class="grid-2">
+        <div class="left-col">
+          <div class="diagram-box"><img src="assets/08_kmeans.png" alt="K-Means Clustering" /></div>
+          <div class="ref-strip">Further Visuals &amp; Docs: <a href="https://www.naftaliharris.com/blog/visualizing-k-means-clustering/" target="_blank">Naftali Harris: K-Means</a></div>
+        </div>
+        <div class="stack">
+          <div class="card" style="flex:1;">
+            <h3>4-Step EM Algorithm</h3>
+            <ul><li><strong>Init &amp; Assign:</strong> Initialize K centroids (k-means++) and assign every point to its nearest centroid.</li>
+<li><strong>Update &amp; Converge:</strong> Recompute each centroid as the cluster mean; repeat until assignments stop changing.</li></ul>
+          </div>
+          <div class="card" style="background:var(--yellow-soft); flex:1;">
+            <h3>Choosing K &amp; Limitations</h3>
+            <ul><li><strong>Elbow Method:</strong> Plot Inertia vs. K (or Silhouette Score) to find where diminishing returns start.</li>
+<li><strong>Limitation:</strong> Assumes spherical, equally sized clusters and is sensitive to outliers and feature scale.</li></ul>
+          </div>
+        </div>
+      </div>
+    </section>
+    <section class="slide" data-notes="DBSCAN Clustering">
+      <div class="header"><span class="badge" style="background:var(--green)">UNSUPERVISED: CLUSTERING</span><span class="slide-num">19 / 22</span></div>
+      <h1>DBSCAN Clustering</h1>
+      <p class="subtitle">Density-based clustering that discovers arbitrary shapes and flags outliers automatically.</p>
+      <div class="grid-2">
+        <div class="left-col">
+          <div class="diagram-box"><img src="assets/08_dbscan.png" alt="DBSCAN Clustering" /></div>
+          <div class="ref-strip">Further Visuals &amp; Docs: <a href="https://www.naftaliharris.com/blog/visualizing-dbscan-clustering/" target="_blank">Naftali Harris: DBSCAN</a> <a href="https://scikit-learn.org/stable/auto_examples/cluster/plot_cluster_comparison.html" target="_blank">Sklearn Clustering Demo</a></div>
+        </div>
+        <div class="stack">
+          <div class="card" style="flex:1;">
+            <h3>Core, Border &amp; Noise Points</h3>
+            <ul><li><strong>Core Point:</strong> Has at least min_samples neighbors within radius eps.</li>
+<li><strong>Density-Reachable:</strong> Chains core points together — effortlessly traces moons, rings, and irregular shapes.</li></ul>
+          </div>
+          <div class="card" style="background:var(--yellow-soft); flex:1;">
+            <h3>Strengths &amp; Limitations</h3>
+            <ul><li><strong>Outlier Detection:</strong> Isolated points in sparse regions are labeled -1 (Noise) instead of forced into clusters.</li>
+<li><strong>Limitation:</strong> Struggles when clusters have widely varying densities (use HDBSCAN for that).</li></ul>
+          </div>
+        </div>
+      </div>
+    </section>
+    <section class="slide" data-notes="Principal Component Analysis (PCA)">
+      <div class="header"><span class="badge" style="background:var(--orange)">UNSUPERVISED: COMPRESSION</span><span class="slide-num">20 / 22</span></div>
+      <h1>Principal Component Analysis (PCA)</h1>
+      <p class="subtitle">Orthogonal linear projection onto principal axes that maximize retained variance.</p>
+      <div class="grid-2">
+        <div class="left-col">
+          <div class="diagram-box"><img src="assets/09_pca.png" alt="Principal Component Analysis (PCA)" /></div>
+          <div class="ref-strip">Further Visuals &amp; Docs: <a href="https://setosa.io/ev/principal-component-analysis/" target="_blank">Setosa.io PCA Visual</a> <a href="https://www.youtube.com/watch?v=FgakZw6K1QQ" target="_blank">StatQuest: PCA Step-by-Step</a></div>
+        </div>
+        <div class="stack">
+          <div class="card" style="flex:1;">
+            <h3>Architecture &amp; Math Intuition</h3>
+            <ul><li><strong>Eigenvectors / SVD:</strong> Finds perpendicular axes (PC1, PC2, ...) ordered by how much variance they explain.</li>
+<li><strong>Projection:</strong> Z = X * W compresses correlated features into uncorrelated components.</li></ul>
+          </div>
+          <div class="card" style="background:var(--yellow-soft); flex:1;">
+            <h3>Best Practices &amp; Use Cases</h3>
+            <ul><li><strong>Scaling Required:</strong> Always standardize features first so large-scale columns don&#x27;t hijack PC1.</li>
+<li><strong>Use Cases:</strong> 2D/3D visualization, noise filtering, and speeding up downstream models (keep ~95% variance).</li></ul>
+          </div>
+        </div>
+      </div>
+    </section>
+    <section class="slide" data-notes="Model selection cheat sheet.">
+      <div class="header"><span class="badge" style="background:var(--orange)">Summary</span><span class="slide-num">21 / 22</span></div>
+      <h1>Model Selection Cheat Sheet</h1>
+      <p class="subtitle">Matching problem structure, data size, and interpretability requirements.</p>
+      <div class="stack" style="gap:10px;">
+        <div class="cheat-row" style="background:var(--blue-soft)"><strong>Linear / Polynomial + Ridge / Lasso</strong> — Continuous target, linear/smooth relationships, interpretability <span style="color:var(--muted)">Key Hyperparameters: alpha, degree</span></div>
+        <div class="cheat-row" style="background:var(--purple-soft)"><strong>Logistic Regression / Naive Bayes / SVM</strong> — Binary or multiclass classification; text (NB) or non-linear margins (RBF SVM) <span style="color:var(--muted)">Key Hyperparameters: C, kernel, gamma</span></div>
+        <div class="cheat-row" style="background:var(--green-soft)"><strong>Decision Trees &amp; Random Forests</strong> — Tabular data with mixed feature scales &amp; non-linear interactions <span style="color:var(--muted)">Key Hyperparameters: max_depth, n_estimators</span></div>
+        <div class="cheat-row" style="background:var(--orange-soft)"><strong>XGBoost / LightGBM / CatBoost</strong> — State-of-the-art performance on structured/tabular datasets <span style="color:var(--muted)">Key Hyperparameters: learning_rate, max_depth</span></div>
+        <div class="cheat-row" style="background:var(--yellow-soft)"><strong>K-Means / DBSCAN / PCA</strong> — Unlabeled clustering (blobs vs. arbitrary shapes) or dimensionality reduction <span style="color:var(--muted)">Key Hyperparameters: n_clusters, eps, n_components</span></div>
+      </div>
+    </section>
+    <section class="slide" data-notes="Curated learning resources and references.">
+      <div class="header"><span class="badge" style="background:var(--blue)">Further Reading</span><span class="slide-num">22 / 22</span></div>
+      <h1>Curated Learning Resources &amp; References</h1>
+      <p class="subtitle">Recommended courses, textbooks, and interactive sandboxes to deepen your understanding.</p>
+      <div class="grid-2-eq">
+        <div class="card" style="background:var(--blue-soft)">
+          <h3>All-in-One Foundations</h3>
+          <ul>
+            <li><strong>Visual Intuition:</strong> StatQuest with Josh Starmer — playlists on linear models, SVMs, trees, XGBoost, and clustering.</li>
+            <li><strong>Interactive Coding:</strong> Kaggle Learn (Intro to ML &amp; Intermediate ML) — pipelines, cross-validation, data leakage, XGBoost.</li>
+            <li><strong>Structured Theory:</strong> Andrew Ng's ML Specialization (Coursera, free to audit).</li>
+            <li><strong>Reference Textbook:</strong> An Introduction to Statistical Learning (ISLP Python / ISLR R — free PDFs).</li>
+            <li><strong>Practical Engineering:</strong> Hands-On Machine Learning with Scikit-Learn, Keras &amp; TensorFlow (O'Reilly, Ch. 1–9).</li>
+          </ul>
+          <div class="links">
+            <a href="https://www.youtube.com/@statquest/playlists" target="_blank">StatQuest</a>
+            <a href="https://www.kaggle.com/learn/intro-to-machine-learning" target="_blank">Kaggle Intro</a>
+            <a href="https://www.kaggle.com/learn/intermediate-machine-learning" target="_blank">Kaggle Interm.</a>
+            <a href="https://www.coursera.org/specializations/machine-learning-introduction" target="_blank">Coursera</a>
+            <a href="https://www.statlearning.com/" target="_blank">ISLR/ISLP</a>
+          </div>
+        </div>
+        <div class="card" style="background:var(--orange-soft)">
+          <h3>Interactive Visualizers &amp; Docs</h3>
+          <ul>
+            <li><strong>Linear &amp; Classifiers:</strong> Scikit-Learn Linear Models Guide &amp; Classifier Comparison Demo.</li>
+            <li><strong>Probabilistic &amp; SVMs:</strong> 3Blue1Brown Bayes Theorem; StatQuest SVMs &amp; Ridge vs. Lasso.</li>
+            <li><strong>Trees &amp; Boosting:</strong> R2D3 Visual Intro to ML; XGBoost Official Docs; Kaggle Competitions.</li>
+            <li><strong>Clustering &amp; PCA:</strong> Naftali Harris K-Means &amp; DBSCAN Sandboxes; Scikit-Learn Clustering Demo; Setosa.io PCA.</li>
+          </ul>
+          <div class="links">
+            <a href="http://www.r2d3.us/visual-intro-to-machine-learning-part-1/" target="_blank">R2D3</a>
+            <a href="https://xgboost.readthedocs.io/en/stable/tutorials/model.html" target="_blank">XGBoost</a>
+            <a href="https://www.naftaliharris.com/blog/visualizing-k-means-clustering/" target="_blank">K-Means</a>
+            <a href="https://www.naftaliharris.com/blog/visualizing-dbscan-clustering/" target="_blank">DBSCAN</a>
+            <a href="https://setosa.io/ev/principal-component-analysis/" target="_blank">Setosa PCA</a>
+          </div>
+        </div>
+      </div>
+    </section>
+  </div>
+  <div class="controls">
+    <button onclick="prev()">&larr; Prev</button>
+    <button onclick="next()">Next &rarr;</button>
+    <button onclick="toggleFullscreen()" id="fs-btn">Fullscreen (F)</button>
+    <button onclick="toggleNotes()">Notes (N)</button>
+    <button onclick="window.print()">Print / Save PDF</button>
+  </div>
+  <div class="notes-drawer" id="notes"></div>
+  <script>
+    const slides = [...document.querySelectorAll('.slide')];
+    const notesEl = document.getElementById('notes');
+    const fsBtn = document.getElementById('fs-btn');
+    let idx = 0;
+    function show(i) {
+      idx = (i + slides.length) % slides.length;
+      slides.forEach((s, k) => s.classList.toggle('active', k === idx));
+      notesEl.textContent = slides[idx].dataset.notes || '';
+    }
+    function next() { show(idx + 1); }
+    function prev() { show(idx - 1); }
+    function toggleNotes() { notesEl.classList.toggle('open'); }
+    function toggleFullscreen() {
+      const deckEl = document.getElementById('deck');
+      if (!document.fullscreenElement) deckEl.requestFullscreen().catch(() => {});
+      else document.exitFullscreen().catch(() => {});
+    }
+    document.addEventListener('fullscreenchange', () => {
+      fsBtn.textContent = document.fullscreenElement ? 'Exit Fullscreen (F)' : 'Fullscreen (F)';
+    });
+    document.addEventListener('keydown', (e) => {
+      if (e.key === 'ArrowRight' || e.key === ' ') { e.preventDefault(); next(); }
+      if (e.key === 'ArrowLeft') { e.preventDefault(); prev(); }
+      if (e.key.toLowerCase() === 'n') toggleNotes();
+      if (e.key.toLowerCase() === 'f') toggleFullscreen();
+    });
+    show(0);
+  </script>
+</body>
+</html>
