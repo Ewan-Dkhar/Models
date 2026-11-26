@@ -15,13 +15,13 @@
       --muted: #5F5850;
       --yellow: #F59E0B;
       --yellow-soft: #FEF3C7;
-      --orange: #EA580C;
+      --orange: #9A3412;
       --orange-soft: #FFEDD5;
-      --green: #10B981;
+      --green: #047857;
       --green-soft: #D1FAE5;
-      --blue: #0284C7;
+      --blue: #0369A1;
       --blue-soft: #E0F2FE;
-      --purple: #8B5CF6;
+      --purple: #6D28D9;
       --purple-soft: #EDE9FE;
     }
     * { box-sizing: border-box; margin: 0; padding: 0; }
@@ -167,7 +167,7 @@
     @media print {
       body { background: #fff; height: auto; overflow: visible; }
       .controls, .notes-drawer { display: none !important; }
-      .deck-viewport { width: 100%; box-shadow: none; border: none; }
+      .deck-viewport { width: 100%; height: auto; aspect-ratio: auto; overflow: visible; padding: 0; box-shadow: none; border: none; background-image: none; }
       .slide { display: flex !important; page-break-after: always; min-height: 92vh; }
     }
   </style>
@@ -197,7 +197,7 @@
           <h3>Supervised Learning (Labeled Data: X, y)</h3>
           <ul>
             <li><strong>Goal:</strong> Learn a mapping f(X) &rarr; y from known input-output pairs.</li>
-            <li><strong>Regression:</strong> Continuous targets (house price, demand). Models: Linear, Polynomial, Ridge, Lasso, Trees, GBDT.</li>
+            <li><strong>Regression:</strong> Continuous targets (house price, demand, temperature). Models: Linear, Polynomial, Ridge, Lasso, Trees, GBDT.</li>
             <li><strong>Classification:</strong> Discrete class labels (spam/ham, diagnosis). Models: Logistic, k-NN, Naive Bayes, SVM, Trees, Forests, GBDT.</li>
           </ul>
         </div>
@@ -218,7 +218,7 @@
       <div class="grid-2">
         <div class="left-col">
           <div class="diagram-box"><img src="assets/00_pipeline.png" alt="The End-to-End ML Workflow" /></div>
-          <div class="ref-strip">Further Visuals &amp; Docs: <a href="https://www.kaggle.com/learn/intermediate-machine-learning" target="_blank">Kaggle Intermediate ML</a></div>
+          <div class="ref-strip">Further Visuals &amp; Docs: <a href="https://www.kaggle.com/learn/intermediate-machine-learning" target="_blank" rel="noopener noreferrer">Kaggle Intermediate ML</a></div>
         </div>
         <div class="stack">
           <div class="card" style="flex:1;">
@@ -241,7 +241,7 @@
       <div class="grid-2">
         <div class="left-col">
           <div class="diagram-box"><img src="assets/00_bias_variance.png" alt="Bias-Variance Trade-off: Underfitting vs. Overfitting" /></div>
-          <div class="ref-strip">Further Visuals &amp; Docs: <a href="https://www.statlearning.com/" target="_blank">ISLR / ISLP Textbook</a></div>
+          <div class="ref-strip">Further Visuals &amp; Docs: <a href="https://www.statlearning.com/" target="_blank" rel="noopener noreferrer">ISLR / ISLP Textbook</a></div>
         </div>
         <div class="stack">
           <div class="card" style="flex:1;">
@@ -251,7 +251,7 @@
           </div>
           <div class="card" style="background:var(--yellow-soft); flex:1;">
             <h3>How to Find the Sweet Spot</h3>
-            <ul><li><strong>Validation Curves:</strong> Use k-fold cross-validation to track test error as complexity grows.</li>
+            <ul><li><strong>Validation Curves:</strong> Use k-fold cross-validation to track validation error as complexity grows.</li>
 <li><strong>Remedies:</strong> Add regularization or more data to fix variance; add features/flexibility to fix bias.</li></ul>
           </div>
         </div>
@@ -264,7 +264,7 @@
       <div class="grid-2">
         <div class="left-col">
           <div class="diagram-box"><img src="assets/01_linear_ols.png" alt="Linear Regression (Ordinary Least Squares)" /></div>
-          <div class="ref-strip">Further Visuals &amp; Docs: <a href="https://scikit-learn.org/stable/modules/linear_model.html" target="_blank">Scikit-Learn Linear Models</a></div>
+          <div class="ref-strip">Further Visuals &amp; Docs: <a href="https://scikit-learn.org/stable/modules/linear_model.html" target="_blank" rel="noopener noreferrer">Scikit-Learn Linear Models</a></div>
         </div>
         <div class="stack">
           <div class="card" style="flex:1;">
@@ -287,7 +287,7 @@
       <div class="grid-2">
         <div class="left-col">
           <div class="diagram-box"><img src="assets/01_poly.png" alt="Polynomial Regression (Basis Expansion)" /></div>
-          <div class="ref-strip">Further Visuals &amp; Docs: <a href="https://scikit-learn.org/stable/modules/linear_model.html" target="_blank">Scikit-Learn Linear Models</a></div>
+          <div class="ref-strip">Further Visuals &amp; Docs: <a href="https://scikit-learn.org/stable/modules/linear_model.html" target="_blank" rel="noopener noreferrer">Scikit-Learn Linear Models</a></div>
         </div>
         <div class="stack">
           <div class="card" style="flex:1;">
@@ -310,7 +310,7 @@
       <div class="grid-2">
         <div class="left-col">
           <div class="diagram-box"><img src="assets/02_ridge_lasso.png" alt="Ridge (L2) vs. Lasso (L1) Regression" /></div>
-          <div class="ref-strip">Further Visuals &amp; Docs: <a href="https://www.youtube.com/watch?v=Xm2C_gTAl8c" target="_blank">StatQuest: Ridge vs. Lasso</a> <a href="https://scikit-learn.org/stable/modules/linear_model.html" target="_blank">Scikit-Learn Linear Models</a></div>
+          <div class="ref-strip">Further Visuals &amp; Docs: <a href="https://www.youtube.com/watch?v=Xm2C_gTAl8c" target="_blank" rel="noopener noreferrer">StatQuest: Ridge vs. Lasso</a> <a href="https://scikit-learn.org/stable/modules/linear_model.html" target="_blank" rel="noopener noreferrer">Scikit-Learn Linear Models</a></div>
         </div>
         <div class="stack">
           <div class="card" style="flex:1;">
@@ -329,11 +329,11 @@
     <section class="slide" data-notes="Logistic Regression">
       <div class="header"><span class="badge" style="background:var(--purple)">SUPERVISED: CLASSIFICATION</span><span class="slide-num">8 / 22</span></div>
       <h1>Logistic Regression</h1>
-      <p class="subtitle">Mapping a linear combination through the Sigmoid function for calibrated probabilities.</p>
+      <p class="subtitle">Mapping a linear combination through the Sigmoid function for probability estimates.</p>
       <div class="grid-2">
         <div class="left-col">
           <div class="diagram-box"><img src="assets/03_logistic.png" alt="Logistic Regression" /></div>
-          <div class="ref-strip">Further Visuals &amp; Docs: <a href="https://scikit-learn.org/stable/auto_examples/classification/plot_classifier_comparison.html" target="_blank">Scikit-Learn Classifier Comparison</a></div>
+          <div class="ref-strip">Further Visuals &amp; Docs: <a href="https://scikit-learn.org/stable/auto_examples/classification/plot_classifier_comparison.html" target="_blank" rel="noopener noreferrer">Scikit-Learn Classifier Comparison</a></div>
         </div>
         <div class="stack">
           <div class="card" style="flex:1;">
@@ -344,7 +344,7 @@
           <div class="card" style="background:var(--yellow-soft); flex:1;">
             <h3>When to Use &amp; Trade-offs</h3>
             <ul><li><strong>Decision Boundary:</strong> Linear hyperplane where P(y=1|x) = 0.5 (threshold can be tuned for precision/recall).</li>
-<li><strong>Strengths:</strong> Fast, interpretable log-odds, and outputs well-calibrated probabilities.</li></ul>
+<li><strong>Strengths:</strong> Fast, interpretable log-odds, and outputs probability estimates (check calibration if probabilities matter).</li></ul>
           </div>
         </div>
       </div>
@@ -356,7 +356,7 @@
       <div class="grid-2">
         <div class="left-col">
           <div class="diagram-box"><img src="assets/03_knn.png" alt="k-Nearest Neighbors (k-NN)" /></div>
-          <div class="ref-strip">Further Visuals &amp; Docs: <a href="https://scikit-learn.org/stable/auto_examples/classification/plot_classifier_comparison.html" target="_blank">Scikit-Learn Classifier Comparison</a></div>
+          <div class="ref-strip">Further Visuals &amp; Docs: <a href="https://scikit-learn.org/stable/auto_examples/classification/plot_classifier_comparison.html" target="_blank" rel="noopener noreferrer">Scikit-Learn Classifier Comparison</a></div>
         </div>
         <div class="stack">
           <div class="card" style="flex:1;">
@@ -379,7 +379,7 @@
       <div class="grid-2">
         <div class="left-col">
           <div class="diagram-box"><img src="assets/04_naive_bayes.png" alt="Naive Bayes Classifier" /></div>
-          <div class="ref-strip">Further Visuals &amp; Docs: <a href="https://www.youtube.com/watch?v=HZGCoVF3YvM" target="_blank">3Blue1Brown: Bayes Theorem</a></div>
+          <div class="ref-strip">Further Visuals &amp; Docs: <a href="https://www.youtube.com/watch?v=HZGCoVF3YvM" target="_blank" rel="noopener noreferrer">3Blue1Brown: Bayes Theorem</a></div>
         </div>
         <div class="stack">
           <div class="card" style="flex:1;">
@@ -402,7 +402,7 @@
       <div class="grid-2">
         <div class="left-col">
           <div class="diagram-box"><img src="assets/04_svm_linear.png" alt="Support Vector Machines (SVM): Linear Margin" /></div>
-          <div class="ref-strip">Further Visuals &amp; Docs: <a href="https://www.youtube.com/@statquest/playlists" target="_blank">StatQuest: SVMs Playlist</a></div>
+          <div class="ref-strip">Further Visuals &amp; Docs: <a href="https://www.youtube.com/@statquest/playlists" target="_blank" rel="noopener noreferrer">StatQuest: SVMs Playlist</a></div>
         </div>
         <div class="stack">
           <div class="card" style="flex:1;">
@@ -425,7 +425,7 @@
       <div class="grid-2">
         <div class="left-col">
           <div class="diagram-box"><img src="assets/04_svm_kernel.png" alt="SVM: The Kernel Trick (Non-Linear Boundaries)" /></div>
-          <div class="ref-strip">Further Visuals &amp; Docs: <a href="https://www.youtube.com/@statquest/playlists" target="_blank">StatQuest: SVMs Playlist</a> <a href="https://scikit-learn.org/stable/auto_examples/classification/plot_classifier_comparison.html" target="_blank">Classifier Comparison</a></div>
+          <div class="ref-strip">Further Visuals &amp; Docs: <a href="https://www.youtube.com/@statquest/playlists" target="_blank" rel="noopener noreferrer">StatQuest: SVMs Playlist</a> <a href="https://scikit-learn.org/stable/auto_examples/classification/plot_classifier_comparison.html" target="_blank" rel="noopener noreferrer">Classifier Comparison</a></div>
         </div>
         <div class="stack">
           <div class="card" style="flex:1;">
@@ -448,7 +448,7 @@
       <div class="grid-2">
         <div class="left-col">
           <div class="diagram-box"><img src="assets/05_decision_tree.png" alt="Decision Trees (CART): How Splits Work" /></div>
-          <div class="ref-strip">Further Visuals &amp; Docs: <a href="http://www.r2d3.us/visual-intro-to-machine-learning-part-1/" target="_blank">R2D3: Visual Intro to ML</a> <a href="https://www.youtube.com/@statquest/playlists" target="_blank">StatQuest: CART Playlist</a></div>
+          <div class="ref-strip">Further Visuals &amp; Docs: <a href="https://r2d3.us/visual-intro-to-machine-learning-part-1/" target="_blank" rel="noopener noreferrer">R2D3: Visual Intro to ML</a> <a href="https://www.youtube.com/@statquest/playlists" target="_blank" rel="noopener noreferrer">StatQuest: CART Playlist</a></div>
         </div>
         <div class="stack">
           <div class="card" style="flex:1;">
@@ -458,7 +458,7 @@
           </div>
           <div class="card" style="background:var(--yellow-soft); flex:1;">
             <h3>Strengths &amp; Properties</h3>
-            <ul><li><strong>Scale Invariant:</strong> No feature scaling needed; handles mixed numerical and non-linear interactions.</li>
+            <ul><li><strong>Scale Invariant:</strong> No feature scaling needed; handles mixed numeric/categorical features and non-linear interactions.</li>
 <li><strong>White-Box Model:</strong> Easy to visualize and explain every decision path step-by-step.</li></ul>
           </div>
         </div>
@@ -471,7 +471,7 @@
       <div class="grid-2">
         <div class="left-col">
           <div class="diagram-box"><img src="assets/05_tree_pruning.png" alt="Decision Trees: Pruning &amp; Controlling Overfitting" /></div>
-          <div class="ref-strip">Further Visuals &amp; Docs: <a href="http://www.r2d3.us/visual-intro-to-machine-learning-part-1/" target="_blank">R2D3: Visual Intro to ML</a></div>
+          <div class="ref-strip">Further Visuals &amp; Docs: <a href="https://r2d3.us/visual-intro-to-machine-learning-part-1/" target="_blank" rel="noopener noreferrer">R2D3: Visual Intro to ML</a></div>
         </div>
         <div class="stack">
           <div class="card" style="flex:1;">
@@ -494,7 +494,7 @@
       <div class="grid-2">
         <div class="left-col">
           <div class="diagram-box"><img src="assets/06_random_forest.png" alt="Random Forests (Bagging + Feature Subsampling)" /></div>
-          <div class="ref-strip">Further Visuals &amp; Docs: <a href="https://www.youtube.com/@statquest/playlists" target="_blank">StatQuest: Random Forests</a> <a href="https://www.kaggle.com/learn/intro-to-machine-learning" target="_blank">Kaggle Intro to ML</a></div>
+          <div class="ref-strip">Further Visuals &amp; Docs: <a href="https://www.youtube.com/@statquest/playlists" target="_blank" rel="noopener noreferrer">StatQuest: Random Forests</a> <a href="https://www.kaggle.com/learn/intro-to-machine-learning" target="_blank" rel="noopener noreferrer">Kaggle Intro to ML</a></div>
         </div>
         <div class="stack">
           <div class="card" style="flex:1;">
@@ -505,7 +505,7 @@
           <div class="card" style="background:var(--yellow-soft); flex:1;">
             <h3>Practical Advantages</h3>
             <ul><li><strong>Out-of-Bag (OOB):</strong> Unused ~37% rows act as a built-in validation check.</li>
-<li><strong>Strong Baseline:</strong> Hard to overfit by adding more trees; handles tabular data with minimal tuning.</li></ul>
+<li><strong>Strong Baseline:</strong> Usually saturates as trees are added and handles tabular data with minimal tuning, though noisy data can still overfit.</li></ul>
           </div>
         </div>
       </div>
@@ -517,7 +517,7 @@
       <div class="grid-2">
         <div class="left-col">
           <div class="diagram-box"><img src="assets/07_gradient_boosting.png" alt="Gradient Boosted Decision Trees (GBDT)" /></div>
-          <div class="ref-strip">Further Visuals &amp; Docs: <a href="https://www.youtube.com/@statquest/playlists" target="_blank">StatQuest: Gradient Boost</a></div>
+          <div class="ref-strip">Further Visuals &amp; Docs: <a href="https://www.youtube.com/@statquest/playlists" target="_blank" rel="noopener noreferrer">StatQuest: Gradient Boost</a></div>
         </div>
         <div class="stack">
           <div class="card" style="flex:1;">
@@ -540,7 +540,7 @@
       <div class="grid-2">
         <div class="left-col">
           <div class="diagram-box"><img src="assets/07_gbdt_variants.png" alt="XGBoost, LightGBM &amp; CatBoost" /></div>
-          <div class="ref-strip">Further Visuals &amp; Docs: <a href="https://xgboost.readthedocs.io/en/stable/tutorials/model.html" target="_blank">XGBoost Docs</a> <a href="https://www.kaggle.com/competitions" target="_blank">Kaggle Competitions</a></div>
+          <div class="ref-strip">Further Visuals &amp; Docs: <a href="https://xgboost.readthedocs.io/en/stable/tutorials/model.html" target="_blank" rel="noopener noreferrer">XGBoost Docs</a> <a href="https://www.kaggle.com/competitions" target="_blank" rel="noopener noreferrer">Kaggle Competitions</a></div>
         </div>
         <div class="stack">
           <div class="card" style="flex:1;">
@@ -563,11 +563,11 @@
       <div class="grid-2">
         <div class="left-col">
           <div class="diagram-box"><img src="assets/08_kmeans.png" alt="K-Means Clustering" /></div>
-          <div class="ref-strip">Further Visuals &amp; Docs: <a href="https://www.naftaliharris.com/blog/visualizing-k-means-clustering/" target="_blank">Naftali Harris: K-Means</a></div>
+          <div class="ref-strip">Further Visuals &amp; Docs: <a href="https://www.naftaliharris.com/blog/visualizing-k-means-clustering/" target="_blank" rel="noopener noreferrer">Naftali Harris: K-Means</a></div>
         </div>
         <div class="stack">
           <div class="card" style="flex:1;">
-            <h3>4-Step EM Algorithm</h3>
+            <h3>Iterative Centroid Algorithm</h3>
             <ul><li><strong>Init &amp; Assign:</strong> Initialize K centroids (k-means++) and assign every point to its nearest centroid.</li>
 <li><strong>Update &amp; Converge:</strong> Recompute each centroid as the cluster mean; repeat until assignments stop changing.</li></ul>
           </div>
@@ -586,7 +586,7 @@
       <div class="grid-2">
         <div class="left-col">
           <div class="diagram-box"><img src="assets/08_dbscan.png" alt="DBSCAN Clustering" /></div>
-          <div class="ref-strip">Further Visuals &amp; Docs: <a href="https://www.naftaliharris.com/blog/visualizing-dbscan-clustering/" target="_blank">Naftali Harris: DBSCAN</a> <a href="https://scikit-learn.org/stable/auto_examples/cluster/plot_cluster_comparison.html" target="_blank">Sklearn Clustering Demo</a></div>
+          <div class="ref-strip">Further Visuals &amp; Docs: <a href="https://www.naftaliharris.com/blog/visualizing-dbscan-clustering/" target="_blank" rel="noopener noreferrer">Naftali Harris: DBSCAN</a> <a href="https://scikit-learn.org/stable/auto_examples/cluster/plot_cluster_comparison.html" target="_blank" rel="noopener noreferrer">Sklearn Clustering Demo</a></div>
         </div>
         <div class="stack">
           <div class="card" style="flex:1;">
@@ -609,7 +609,7 @@
       <div class="grid-2">
         <div class="left-col">
           <div class="diagram-box"><img src="assets/09_pca.png" alt="Principal Component Analysis (PCA)" /></div>
-          <div class="ref-strip">Further Visuals &amp; Docs: <a href="https://setosa.io/ev/principal-component-analysis/" target="_blank">Setosa.io PCA Visual</a> <a href="https://www.youtube.com/watch?v=FgakZw6K1QQ" target="_blank">StatQuest: PCA Step-by-Step</a></div>
+          <div class="ref-strip">Further Visuals &amp; Docs: <a href="https://setosa.io/ev/principal-component-analysis/" target="_blank" rel="noopener noreferrer">Setosa.io PCA Visual</a> <a href="https://www.youtube.com/watch?v=FgakZw6K1QQ" target="_blank" rel="noopener noreferrer">StatQuest: PCA Step-by-Step</a></div>
         </div>
         <div class="stack">
           <div class="card" style="flex:1;">
@@ -650,13 +650,14 @@
             <li><strong>Structured Theory:</strong> Andrew Ng's ML Specialization (Coursera, free to audit).</li>
             <li><strong>Reference Textbook:</strong> An Introduction to Statistical Learning (ISLP Python / ISLR R — free PDFs).</li>
             <li><strong>Practical Engineering:</strong> Hands-On Machine Learning with Scikit-Learn, Keras &amp; TensorFlow (O'Reilly, Ch. 1–9).</li>
+            <li><strong>Practice:</strong> Work through <code>ml_models_examples.ipynb</code> — ten runnable, toy-dataset examples.</li>
           </ul>
           <div class="links">
-            <a href="https://www.youtube.com/@statquest/playlists" target="_blank">StatQuest</a>
-            <a href="https://www.kaggle.com/learn/intro-to-machine-learning" target="_blank">Kaggle Intro</a>
-            <a href="https://www.kaggle.com/learn/intermediate-machine-learning" target="_blank">Kaggle Interm.</a>
-            <a href="https://www.coursera.org/specializations/machine-learning-introduction" target="_blank">Coursera</a>
-            <a href="https://www.statlearning.com/" target="_blank">ISLR/ISLP</a>
+            <a href="https://www.youtube.com/@statquest/playlists" target="_blank" rel="noopener noreferrer">StatQuest</a>
+            <a href="https://www.kaggle.com/learn/intro-to-machine-learning" target="_blank" rel="noopener noreferrer">Kaggle Intro</a>
+            <a href="https://www.kaggle.com/learn/intermediate-machine-learning" target="_blank" rel="noopener noreferrer">Kaggle Interm.</a>
+            <a href="https://www.coursera.org/specializations/machine-learning-introduction" target="_blank" rel="noopener noreferrer">Coursera</a>
+            <a href="https://www.statlearning.com/" target="_blank" rel="noopener noreferrer">ISLR/ISLP</a>
           </div>
         </div>
         <div class="card" style="background:var(--orange-soft)">
@@ -668,28 +669,29 @@
             <li><strong>Clustering &amp; PCA:</strong> Naftali Harris K-Means &amp; DBSCAN Sandboxes; Scikit-Learn Clustering Demo; Setosa.io PCA.</li>
           </ul>
           <div class="links">
-            <a href="http://www.r2d3.us/visual-intro-to-machine-learning-part-1/" target="_blank">R2D3</a>
-            <a href="https://xgboost.readthedocs.io/en/stable/tutorials/model.html" target="_blank">XGBoost</a>
-            <a href="https://www.naftaliharris.com/blog/visualizing-k-means-clustering/" target="_blank">K-Means</a>
-            <a href="https://www.naftaliharris.com/blog/visualizing-dbscan-clustering/" target="_blank">DBSCAN</a>
-            <a href="https://setosa.io/ev/principal-component-analysis/" target="_blank">Setosa PCA</a>
+            <a href="https://r2d3.us/visual-intro-to-machine-learning-part-1/" target="_blank" rel="noopener noreferrer">R2D3</a>
+            <a href="https://xgboost.readthedocs.io/en/stable/tutorials/model.html" target="_blank" rel="noopener noreferrer">XGBoost</a>
+            <a href="https://www.naftaliharris.com/blog/visualizing-k-means-clustering/" target="_blank" rel="noopener noreferrer">K-Means</a>
+            <a href="https://www.naftaliharris.com/blog/visualizing-dbscan-clustering/" target="_blank" rel="noopener noreferrer">DBSCAN</a>
+            <a href="https://setosa.io/ev/principal-component-analysis/" target="_blank" rel="noopener noreferrer">Setosa PCA</a>
           </div>
         </div>
       </div>
     </section>
+    <div class="notes-drawer" id="notes"></div>
   </div>
-  <div class="controls">
+  <nav class="controls" aria-label="Slide controls">
     <button onclick="prev()">&larr; Prev</button>
     <button onclick="next()">Next &rarr;</button>
     <button onclick="toggleFullscreen()" id="fs-btn">Fullscreen (F)</button>
-    <button onclick="toggleNotes()">Notes (N)</button>
+    <button id="notes-btn" onclick="toggleNotes()" aria-controls="notes" aria-expanded="false">Notes (N)</button>
     <button onclick="window.print()">Print / Save PDF</button>
-  </div>
-  <div class="notes-drawer" id="notes"></div>
+  </nav>
   <script>
     const slides = [...document.querySelectorAll('.slide')];
     const notesEl = document.getElementById('notes');
     const fsBtn = document.getElementById('fs-btn');
+    const notesBtn = document.getElementById('notes-btn');
     let idx = 0;
     function show(i) {
       idx = (i + slides.length) % slides.length;
@@ -698,7 +700,10 @@
     }
     function next() { show(idx + 1); }
     function prev() { show(idx - 1); }
-    function toggleNotes() { notesEl.classList.toggle('open'); }
+    function toggleNotes() {
+      const open = notesEl.classList.toggle('open');
+      notesBtn.setAttribute('aria-expanded', String(open));
+    }
     function toggleFullscreen() {
       const deckEl = document.getElementById('deck');
       if (!document.fullscreenElement) deckEl.requestFullscreen().catch(() => {});
@@ -708,6 +713,8 @@
       fsBtn.textContent = document.fullscreenElement ? 'Exit Fullscreen (F)' : 'Fullscreen (F)';
     });
     document.addEventListener('keydown', (e) => {
+      if (e.ctrlKey || e.metaKey || e.altKey) return; // keep browser shortcuts
+      if (e.target instanceof Element && e.target.closest('button, a') && (e.key === ' ' || e.key === 'Enter')) return;
       if (e.key === 'ArrowRight' || e.key === ' ') { e.preventDefault(); next(); }
       if (e.key === 'ArrowLeft') { e.preventDefault(); prev(); }
       if (e.key.toLowerCase() === 'n') toggleNotes();
